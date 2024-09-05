@@ -24,14 +24,21 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
                           blob_name="Bond Master File.xlsx.json",
                           credential="eyLhe8ZPYGZovt+BlpXu4syIzRUVmh9J+T3UGKzczeRqW6iAnXfAUHgLrCtJ6cz2zWinLP9dzpGe+ASt494OPQ==")
         
-        # Download the blob content as JSON
-        blob_data = blob.download_blob().readall()
-        logging.info(f"Blob content: {blob_data[:100]}")  # Log only the first 100 characters for debugging
+        blob_data = blob.download_blob().readall().decode('utf-8').strip()
+        logging.info(f"Raw blob content: {blob_data[:100]}")  # Log first 100 characters for debugging
         
-        # Parse the JSON content from the blob
-        json_data = json.loads(blob_data)
+        # Split by newlines to handle multiple JSON objects
+        json_lines = blob_data.split("\n")
+        processed_bonds = []
+        
+        # Parse each line as a separate JSON object
+        for line in json_lines:
+            try:
+                bond = json.loads(line)
+                processed_bonds.append(bond)
+            except json.JSONDecodeError as e:
+                logging.error(f"JSON decode error: {str(e)} for line: {line}")
 
-        
         # Get the user input from the request body
         try:
             req_body = req.get_json()
@@ -39,18 +46,16 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         except ValueError:
             logging.error("Invalid request body.")
             return func.HttpResponse("Invalid request body. Please provide valid JSON.", status_code=400)
-        
-        # Combine bond data with user input to send to OpenAI API
-        openai_prompt = {
-            "user_input": user_input,
-            "bond_data": blob_data
-        }
-        
+
+        # Combine the bond data and user input into a single text prompt
+        prompt = f"User input: {user_input}\n\nBond Data:\n{json.dumps(processed_bonds, indent=2)}"
+        logging.info(f"Generated prompt for OpenAI: {prompt}")
+
         # Call the OpenAI API
-        openai.api_key = os.getenv('OpenAIKey')
+        openai.api_key = os.getenv("OpenAIKey")
         response = openai.Completion.create(
             engine="gpt-4o",
-            prompt=f"Process the following bond data and user input: {json.dumps(openai_prompt)}",
+            prompt=prompt
         )
         
         # Extract the OpenAI response
