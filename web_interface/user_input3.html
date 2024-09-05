@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Bond Data Inference Interface</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* Container Layout */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            width: 70%;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Input Styles */
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+            outline: none;
+        }
+
+        /* Button Styles */
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* AI Response Styles */
+        h2 {
+            margin-top: 30px;
+            color: #333;
+            font-size: 20px;
+        }
+
+        #aiResponse {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Sidebar with Example Queries */
+        .sidebar {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-left: 20px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            width: 25%;
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .example-query {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .example-query:hover {
+            background-color: #e0e0e0;
+        }
+
+        .example-query a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 16px;
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .main-content, .sidebar {
+                width: 100%;
+            }
+
+            .sidebar {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1>AI Data Inference Interface</h1>
+            <form id="inputForm">
+                <label for="userInput">Enter your input:</label>
+                <input type="text" id="userInput" name="user_input" required>
+                <input type="submit" value="Submit">
+            </form>
+
+            <h2>AI Response:</h2>
+            <p id="aiResponse"></p>
+        </div>
+
+        <!-- Sidebar with Example Queries -->
+        <div class="sidebar">
+            <h2>Example Queries</h2>
+            <div class="example-query" onclick="fillFormAndSubmit('Which 5 bonds have the highest interest rates?')">
+                <a href="#">Which 5 bonds have the highest interest rates?</a>
+            </div>
+            <div class="example-query" onclick="fillFormAndSubmit('What is the longest maturity date in the file?')">
+                <a href="#">What is the longest maturity date in the file?</a>
+            </div>
+            <div class="example-query" onclick="fillFormAndSubmit('What projects include the highest principal payments this year?')">
+                <a href="#">What projects include the highest principal payments this year?</a>
+            </div>
+            <div class="example-query" onclick="fillFormAndSubmit('Which bonds are set to mature next year?')">
+                <a href="#">Which bonds are set to mature next year?</a>
+            </div>
+            <div class="example-query" onclick="fillFormAndSubmit('What is the total interest for all bonds?')">
+                <a href="#">What is the total interest for all bonds?</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form submit event listener
+        document.getElementById("inputForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            sendJSON();
+        });
+
+        // Function to fill the form and submit automatically
+        function fillFormAndSubmit(query) {
+            document.getElementById("userInput").value = query;
+            sendJSON();
+        }
+
+        // Function to send the JSON request
+        function sendJSON() {
+            const user_input = document.getElementById("userInput").value;
+
+            // Show loading message while fetching the response
+            document.getElementById("aiResponse").innerText = "Fetching response from model...";
+
+            // Define the URL of your Azure Function
+            const url = "https://financeanalysisapp.azurewebsites.net/api/TriggerProcessingBonds";
+
+            // Create the JSON data to send
+            const data = JSON.stringify({ user_input: user_input });
+
+            // Send the POST request
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: data
+            })
+            .then(response => response.text()) // Assuming the response is plain text
+            .then(text => {
+                // Display the AI response
+                document.getElementById("aiResponse").innerText = text;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("aiResponse").innerText = "Error: " + error;
+            });
+        }
+    </script>
+
+</body>
+</html>
