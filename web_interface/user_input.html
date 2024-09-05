@@ -29,7 +29,7 @@
             const url = "https://financeanalysisapp.azurewebsites.net/api/TriggerProcessingBonds";
 
             // Create the JSON data to send
-            const data = JSON.stringify({ name: userInput }); // Change 'user_input' to 'name' to match your Azure Function
+            const data = JSON.stringify({ user_input: userInput }); // Change 'user_input' to 'name' to match your Azure Function
 
             // Send the POST request
             fetch(url, {
