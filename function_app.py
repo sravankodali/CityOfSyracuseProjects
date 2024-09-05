@@ -13,8 +13,8 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     
     try:
-        # Access the OpenAI API key from environment variables
-        
+        # Access the OpenAI API key from environment variables using os.environ
+        openai.api_key = os.environ["OPENAI_API_KEY"]  # This will raise a KeyError if not set
         # Initialize the BlobClient
         blob = BlobClient(account_url="https://bondprocessing.blob.core.windows.net",
                           container_name="spreadsheet",
@@ -49,9 +49,6 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         logging.info(f"Generated prompt for OpenAI: {prompt}")
 
         # Call the OpenAI API using the new interface
-        client = OpenAI(
-            api_key = os.environ.get("OPENAI_API_KEY"),
-            )
         response = openai.completions.create(
             model="gpt-4o",
             messages=[
