@@ -1,7 +1,18 @@
 import azure.functions as func
 import logging
+import json 
+import openai
+from azure.storage.blob import BlobServiceClient
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+
+# Set up OpenAI API key
+openai.api_key = os.getenv("OpenAIKey")
+
+# Set up Azure Blob Storage connection string
+connection_string = os.getenv("AzureWebJobsStorage")
+container_name = "spreadsheet"
+blob_name = "Bond Master File.xlsx.json"
 
 @app.route(route="TriggerProcessingBonds")
 def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
