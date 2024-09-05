@@ -13,10 +13,10 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
     
     try:
         # Access the OpenAI API key from environment variables
-        #OpenAIKey = os.getenv('OpenAIKey')
-        #if not OpenAIKey:
-            #logging.error("OpenAI API key not found in environment variables.")
-            #return func.HttpResponse("OpenAI API key is missing.", status_code=500)
+        openai.api_key = os.getenv("OpenAIKey")
+        if not openai.api_key:
+            logging.error("OpenAI API key not found in environment variables.")
+            return func.HttpResponse("OpenAI API key is missing.", status_code=500)
         
         # Initialize the BlobClient
         blob = BlobClient(account_url="https://bondprocessing.blob.core.windows.net",
@@ -51,15 +51,17 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         prompt = f"User input: {user_input}\n\nBond Data:\n{json.dumps(processed_bonds, indent=2)}"
         logging.info(f"Generated prompt for OpenAI: {prompt}")
 
-        # Call the OpenAI API
-        openai.api_key = os.getenv("OpenAIKey")
-        response = openai.Completion.create(
-            engine="gpt-4o",
-            prompt=prompt
+        # Call the OpenAI API using the new interface
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a financial analyst."},
+                {"role": "user", "content": prompt}
+            ]
         )
         
         # Extract the OpenAI response
-        openai_response = response['choices'][0]['text']
+        openai_response = response['choices'][0]['message']['content']
         logging.info(f"OpenAI response: {openai_response}")
         
         # Return the OpenAI response
