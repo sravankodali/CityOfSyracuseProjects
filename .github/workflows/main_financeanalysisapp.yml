@@ -34,6 +34,20 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Update local.settings.json with GitHub secret
+        run: |
+          cat <<EOF > local.settings.json
+          {
+            "IsEncrypted": false,
+            "Values": {
+              "AzureWebJobsStorage": "${{ secrets.AZURE_WEBJOBS_STORAGE }}",
+              "OpenAIKey": "${{ secrets.OPEN_AI_PROJECT_KEY}}",
+              "FUNCTIONS_WORKER_RUNTIME": "python",
+              "AzureWebJobsFeatureFlags": "EnableWorkerIndexing"
+            }
+          }
+          EOF
+
       # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
