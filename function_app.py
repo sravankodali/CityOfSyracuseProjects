@@ -2,6 +2,7 @@ import azure.functions as func
 import logging
 import json 
 import openai
+import os
 from azure.storage.blob import BlobClient
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
