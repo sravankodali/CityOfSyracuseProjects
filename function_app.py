@@ -16,7 +16,7 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
     try:
         try:
             req_body = req.get_json()
-            user_input = req_body.get("name", "")
+            user_input = req_body.get("user_input", "")
         except ValueError:
             logging.error("Invalid request body.")
             return func.HttpResponse("Invalid request body. Please provide valid JSON.", status_code=400)
