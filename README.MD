@@ -1,2 +1,1 @@
-
-https://bondinferencehosting.blob.core.windows.net/$web/user_input3.html
+https://bondinferencehosting.z13.web.core.windows.net/
