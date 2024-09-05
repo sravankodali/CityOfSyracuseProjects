@@ -13,10 +13,10 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
     
     try:
         # Access the OpenAI API key from environment variables
-        OpenAIKey = os.getenv('OpenAIKey')
-        if not OpenAIKey:
-            logging.error("OpenAI API key not found in environment variables.")
-            return func.HttpResponse("OpenAI API key is missing.", status_code=500)
+        #OpenAIKey = os.getenv('OpenAIKey')
+        #if not OpenAIKey:
+            #logging.error("OpenAI API key not found in environment variables.")
+            #return func.HttpResponse("OpenAI API key is missing.", status_code=500)
         
         # Initialize the BlobClient
         blob = BlobClient(account_url="https://bondprocessing.blob.core.windows.net",
@@ -47,7 +47,7 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         }
         
         # Call the OpenAI API
-        openai.api_key = OpenAIKey
+        openai.api_key = os.getenv('OpenAIKey')
         response = openai.Completion.create(
             engine="gpt-4o",
             prompt=f"Process the following bond data and user input: {json.dumps(openai_prompt)}",
