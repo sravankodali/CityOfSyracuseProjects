@@ -3,7 +3,9 @@ import logging
 import json
 import os
 from azure.storage.blob import BlobClient
+import google.generativeai as genai
 
+genai.configure(api_key=os.environ["API_KEY"])
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 

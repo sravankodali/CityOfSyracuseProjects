@@ -5,3 +5,5 @@
 azure-functions
 azure-storage-blob
 openai
+transformers
+google.generativeai
