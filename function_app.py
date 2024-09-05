@@ -3,6 +3,7 @@ import logging
 import json
 import os
 import openai
+from openai import OpenAI
 from azure.storage.blob import BlobClient
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -48,7 +49,9 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         logging.info(f"Generated prompt for OpenAI: {prompt}")
 
         # Call the OpenAI API using the new interface
-        openai.api_key = os.getenv("OPENAI_API_KEY")
+        client = OpenAI(
+            api_key = os.environ.get("OPENAI_API_KEY"),
+            )
         response = openai.completions.create(
             model="gpt-4o",
             messages=[
