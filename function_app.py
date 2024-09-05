@@ -6,6 +6,10 @@ import transformers
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from azure.storage.blob import BlobClient
 
+# Pre-load the model and tokenizer outside the request function to avoid cold start delays
+tokenizer = AutoTokenizer.from_pretrained("LargeWorldModel/LWM-Text-Chat-1M")
+model = AutoModelForCausalLM.from_pretrained("LargeWorldModel/LWM-Text-Chat-1M")
+
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 @app.route(route="TriggerProcessingBonds")
@@ -13,51 +17,24 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     
     try:
-        tokenizer = AutoTokenizer.from_pretrained("LargeWorldModel/LWM-Text-Chat-1M")
-        model = AutoModelForCausalLM.from_pretrained("LargeWorldModel/LWM-Text-Chat-1M")
         # Initialize the BlobClient
         blob = BlobClient(account_url="https://bondprocessing.blob.core.windows.net",
                           container_name="spreadsheet",
                           blob_name="Bond Master File.xlsx.json",
-                          credential="eyLhe8ZPYGZovt+BlpXu4syIzRUVmh9J+T3UGKzczeRqW6iAnXfAUHgLrCtJ6cz2zWinLP9dzpGe+ASt494OPQ==")
+                          credential="your_blob_credential_here")
         
         blob_data = blob.download_blob().readall().decode('utf-8').strip()
         logging.info(f"Raw blob content: {blob_data[:100]}")  # Log first 100 characters for debugging
         
-        # Split by newlines to handle multiple JSON objects
-        json_lines = blob_data.split("\n")
-        processed_bonds = []
+        # Tokenize some prompt (example)
+        prompt = "Your bond processing prompt here"
+        inputs = tokenizer(prompt, return_tensors="pt")
         
-        # Parse each line as a separate JSON object
-        for line in json_lines:
-            try:
-                bond = json.loads(line)
-                processed_bonds.append(bond)
-            except json.JSONDecodeError as e:
-                logging.error(f"JSON decode error: {str(e)} for line: {line}")
+        # Generate a response using the model
+        outputs = model.generate(**inputs, max_length=200)
+        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-        # Get the user input from the request body
-        try:
-            req_body = req.get_json()
-            user_input = req_body.get("user_input", "")
-        except ValueError:
-            logging.error("Invalid request body.")
-            return func.HttpResponse("Invalid request body. Please provide valid JSON.", status_code=400)
-
-        # Combine the bond data and user input into a single text prompt
-        prompt = f"User input: {user_input}\n\nBond Data:\n{json.dumps(processed_bonds, indent=2)}"
-        logging.info(f"Generated prompt for OpenAI: {prompt}")
-
-        # Call the OpenAI API using the new interface
-        inputs = tokenizer(prompt)
-        response = model.generate(**inputs, max_length = 300)
-        
-        # Extract the OpenAI response
-        openai_response = response['choices'][0]['message']['content']
-        logging.info(f"OpenAI response: {openai_response}")
-         
-        # Return the OpenAI response
-        return func.HttpResponse(openai_response, status_code=200)
+        return func.HttpResponse(response, status_code=200)
 
     except Exception as e:
         logging.error(f"Failed to process: {str(e)}")
