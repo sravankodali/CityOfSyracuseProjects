@@ -52,7 +52,7 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         client = OpenAI()
         response = client.completions.create(
             model="gpt-3.5-turbo-instruct",
-            prompt=prompt,
+            prompt="what's your name",
             temperature=1,
             top_p=1,
             frequency_penalty=0,
