@@ -49,8 +49,8 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
 
         # Call the OpenAI API using the new interface
         openai.api_key = os.getenv("OpenAIKey")
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
+        response = openai.completions.create(
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are a financial analyst."},
                 {"role": "user", "content": prompt}
