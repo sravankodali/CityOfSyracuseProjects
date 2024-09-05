@@ -18,7 +18,7 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
                           blob_name="Bond Master File.xlsx.json",
                           credential="your_blob_credential_here")
         
-        blob_data = blob.download_blob().readall().decode('utf-8').strip()
+        blob_data = blob.download_blob().readall()
         logging.info(f"Raw blob content: {blob_data[:100]}")  # Log first 100 characters for debugging
         
 
