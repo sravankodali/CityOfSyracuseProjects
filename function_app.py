@@ -18,7 +18,7 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         blob = BlobClient(account_url="https://bondprocessing.blob.core.windows.net",
                           container_name="spreadsheet",
                           blob_name="Bond Master File.xlsx.json",
-                          credential="your_blob_credential_here")
+                          credential="eyLhe8ZPYGZovt+BlpXu4syIzRUVmh9J+T3UGKzczeRqW6iAnXfAUHgLrCtJ6cz2zWinLP9dzpGe+ASt494OPQ==")
         
         blob_data = blob.download_blob().readall()
         logging.info(f"Raw blob content: {blob_data[:100]}")  # Log first 100 characters for debugging
