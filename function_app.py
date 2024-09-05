@@ -31,7 +31,7 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         logging.info(f"Raw blob content: {blob_data[:100]}")  # Log first 100 characters for debugging
         
         model = genai.GenerativeModel("gemini-1.5-flash")
-        prompt = f"User input: {user_input}\n\nBond Data: {blob_data}"
+        prompt = f"User input: {user_input}. Please analyze the following data and answer the user's question based on the bond properties. \n\nBond Data: {blob_data}"
         response = model.generate_content(prompt)
 
         return func.HttpResponse(response.text, status_code=200)
