@@ -41,7 +41,7 @@ jobs:
             "IsEncrypted": false,
             "Values": {
               "AzureWebJobsStorage": "${{ secrets.AZURE_WEBJOBS_STORAGE }}",
-              "OpenAIKey": "${{ secrets.OPEN_AI_PROJECT_KEY}}",
+              "OPENAI_API_KEY": "${{ secrets.OPEN_AI_PROJECT_KEY}}",
               "FUNCTIONS_WORKER_RUNTIME": "python",
               "AzureWebJobsFeatureFlags": "EnableWorkerIndexing"
             }

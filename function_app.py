@@ -48,7 +48,7 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         logging.info(f"Generated prompt for OpenAI: {prompt}")
 
         # Call the OpenAI API using the new interface
-        openai.api_key = os.getenv("OpenAIKey")
+        openai.api_key = os.getenv("OPENAI_API_KEY")
         response = openai.completions.create(
             model="gpt-4o",
             messages=[
