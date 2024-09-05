@@ -14,7 +14,7 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
     try:
         # Access the OpenAI API key from environment variables
         OpenAIKey = os.getenv('OpenAIKey')
-        if not openai_api_key:
+        if not OpenAIKey:
             logging.error("OpenAI API key not found in environment variables.")
             return func.HttpResponse("OpenAI API key is missing.", status_code=500)
         
