@@ -32,7 +32,7 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         
         model = genai.GenerativeModel("gemini-1.5-flash")
         prompt = f"User input: {user_input}\n\nBond Data: {blob_data}"
-        response = model.generate_content("Write a story about a magic backpack.")
+        response = model.generate_content(prompt)
 
         return func.HttpResponse(response.text, status_code=200)
 
