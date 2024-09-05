@@ -2,8 +2,8 @@ import azure.functions as func
 import logging
 import json
 import os
-import openai
-from openai import OpenAI
+import transformers
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from azure.storage.blob import BlobClient
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -13,8 +13,8 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     
     try:
-        # Access the OpenAI API key from environment variables using os.environ
-        openai.api_key = os.environ["OPENAI_API_KEY"]  # This will raise a KeyError if not set
+        tokenizer = AutoTokenizer.from_pretrained("LargeWorldModel/LWM-Text-Chat-1M")
+        model = AutoModelForCausalLM.from_pretrained("LargeWorldModel/LWM-Text-Chat-1M")
         # Initialize the BlobClient
         blob = BlobClient(account_url="https://bondprocessing.blob.core.windows.net",
                           container_name="spreadsheet",
@@ -49,20 +49,13 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         logging.info(f"Generated prompt for OpenAI: {prompt}")
 
         # Call the OpenAI API using the new interface
-        client = OpenAI()
-        response = client.completions.create(
-            model="gpt-3.5-turbo-instruct",
-            prompt="what's your name",
-            temperature=1,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
-        )
+        inputs = tokenizer(prompt)
+        response = model.generate(**inputs, max_length = 300)
         
         # Extract the OpenAI response
         openai_response = response['choices'][0]['message']['content']
         logging.info(f"OpenAI response: {openai_response}")
-        
+         
         # Return the OpenAI response
         return func.HttpResponse(openai_response, status_code=200)
 
