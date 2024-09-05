@@ -23,8 +23,10 @@ def TriggerProcessingBonds(req: func.HttpRequest) -> func.HttpResponse:
         blob_data = blob.download_blob().readall()
         logging.info(f"Raw blob content: {blob_data[:100]}")  # Log first 100 characters for debugging
         
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content("Write a story about a magic backpack.")
 
-        return func.HttpResponse(response, status_code=200)
+        return func.HttpResponse(response.text, status_code=200)
 
     except Exception as e:
         logging.error(f"Failed to process: {str(e)}")
