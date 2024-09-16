@@ -1,4 +1,4 @@
-The City has been using an antiquated water-meter billing software that requires Water Dep't employees to run daily routes with RFID readers to collect meter data from houses. They're planning a migration 
+The City has been using an antiquated water-meter billing software that requires Water Dep't employees to run daily routes with RFID readers to collect meter data from houses. Water is planning a migration 
 from the legacy NSITE system to the Neptune 360 system based on LoRaWaN IoT. Real-time data on meter reads is extremely useful for billing and monitoring leaking pipes, eliminating the need for manually
 driving the routes each day. 
 
