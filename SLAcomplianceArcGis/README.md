@@ -1,1 +1,1 @@
-<img src="/image.png" width="128"/>
+<img src="/SLAcomplianceArcGis/image.png" width="128"/>
